@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HighlyAvailableMonolithPOC.Folders
+namespace HighlyAvailableMonolithPOC.Folders.Commands
 {
     public class CreateFolderCommand : IRequest<Guid>
     {
@@ -25,15 +25,25 @@ namespace HighlyAvailableMonolithPOC.Folders
         {
             Guid id = Guid.NewGuid();
 
-            context.Folders.Add(new Folder()
+            using var transaction = context.Database.BeginTransaction();
+            try
             {
-                Id = id,
-                DisplayName = request.Name,
-                ParentId = request.ParentId
-            });
+                context.Folders.Add(new Folder()
+                {
+                    Id = id,
+                    DisplayName = request.Name,
+                    ParentId = request.ParentId
+                });
 
-            await context.SaveChangesAsync();
-
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                id = Guid.Empty;
+            }
+            
             return id;
         }
     }

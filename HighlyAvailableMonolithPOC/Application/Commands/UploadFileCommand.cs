@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HighlyAvailableMonolithPOC.Folders
+namespace HighlyAvailableMonolithPOC.Folders.Commands
 {
     public class UploadFileCommand : IRequest<Unit>
     {
@@ -44,16 +44,22 @@ namespace HighlyAvailableMonolithPOC.Folders
                     });
 
                     await context.SaveChangesAsync();
-
-                    Directory.CreateDirectory(destinationPath);
-                    using (var stream = System.IO.File.Create(destinationFileName))
-                    {
-                        await request.Content.CopyToAsync(stream);
-                    }
+                    await ProcessAndSave(request, destinationPath, destinationFileName);
                 }
             }
 
             return Unit.Value;
+        }
+
+        private static async Task ProcessAndSave(UploadFileCommand request, string destinationPath, string destinationFileName)
+        {
+            await Task.Delay(3000);  // Simulate some long running processing...
+
+            Directory.CreateDirectory(destinationPath);
+            using (var stream = System.IO.File.Create(destinationFileName))
+            {
+                await request.Content.CopyToAsync(stream);
+            }
         }
     }
 }

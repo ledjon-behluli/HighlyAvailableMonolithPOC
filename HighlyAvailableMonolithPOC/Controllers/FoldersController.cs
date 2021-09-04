@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using MediatR;
-using HighlyAvailableMonolithPOC.Folders;
+using HighlyAvailableMonolithPOC.Folders.Commands;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
 using System;
 
 namespace HighlyAvailableMonolithPOC.Controllers

@@ -1,3 +1,4 @@
+using HighlyAvailableMonolithPOC.Application.Pipelines;
 using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -6,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
 
 namespace HighlyAvailableMonolithPOC
 {
@@ -22,7 +22,11 @@ namespace HighlyAvailableMonolithPOC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMediatR(typeof(Startup).Assembly);
-            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(Configuration.GetValue<string>("ConnectionString"))); 
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MetricsPipeline<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
+
+            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(Configuration.GetValue<string>("ConnectionString")), ServiceLifetime.Scoped);
+            
             services.AddCap(x =>
             {
                 x.UseEntityFramework<ApplicationDbContext>();

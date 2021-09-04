@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Serilog;
 
 namespace HighlyAvailableMonolithPOC
 {
@@ -21,6 +16,13 @@ namespace HighlyAvailableMonolithPOC
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .ConfigureLogging((context, builder) =>
+                {
+                    Log.Logger = new LoggerConfiguration()
+                       .ReadFrom.Configuration(context.Configuration)
+                       .CreateLogger();
+                })
+                .UseSerilog();
     }
 }
