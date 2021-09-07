@@ -25,25 +25,15 @@ namespace HighlyAvailableMonolithPOC.Folders.Commands
         {
             Guid id = Guid.NewGuid();
 
-            using var transaction = context.Database.BeginTransaction();
-            try
+            context.Folders.Add(new Folder()
             {
-                context.Folders.Add(new Folder()
-                {
-                    Id = id,
-                    DisplayName = request.Name,
-                    ParentId = request.ParentId
-                });
+                Id = id,
+                DisplayName = request.Name,
+                ParentId = request.ParentId
+            });
 
-                await context.SaveChangesAsync();
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                id = Guid.Empty;
-            }
-            
+            await context.SaveChangesAsync();
+
             return id;
         }
     }

@@ -4,6 +4,7 @@ using MediatR;
 using HighlyAvailableMonolithPOC.Folders.Commands;
 using Microsoft.AspNetCore.Http;
 using System;
+using HighlyAvailableMonolithPOC.Application.Queries;
 
 namespace HighlyAvailableMonolithPOC.Controllers
 {
@@ -16,6 +17,17 @@ namespace HighlyAvailableMonolithPOC.Controllers
         public FoldersController(ISender sender)
         {
             this.sender = sender;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetFolder([FromRoute] Guid id)
+        {
+            var folderDto = await sender.Send(new GetFolderQuery()
+            {
+                FolderId = id
+            });
+
+            return Ok(folderDto);
         }
 
         [HttpPost]

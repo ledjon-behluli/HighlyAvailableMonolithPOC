@@ -25,7 +25,10 @@ namespace HighlyAvailableMonolithPOC
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MetricsPipeline<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
 
-            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(Configuration.GetValue<string>("ConnectionString")), ServiceLifetime.Scoped);
+            string connectionString = Configuration.GetValue<string>("ConnectionString");
+
+            services.AddScoped(x => new SqlConnectionFactory(connectionString));
+            services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(connectionString), ServiceLifetime.Scoped);
             
             services.AddCap(x =>
             {

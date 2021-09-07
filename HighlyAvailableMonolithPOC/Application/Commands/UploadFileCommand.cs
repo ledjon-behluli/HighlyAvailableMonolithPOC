@@ -53,7 +53,7 @@ namespace HighlyAvailableMonolithPOC.Folders.Commands
 
         private static async Task ProcessAndSave(UploadFileCommand request, string destinationPath, string destinationFileName)
         {
-            await Task.Delay(3000);  // Simulate some long running processing...
+            await Task.Delay(3);  // Simulate some long running processing...
 
             Directory.CreateDirectory(destinationPath);
             using (var stream = System.IO.File.Create(destinationFileName))
