@@ -1,4 +1,6 @@
-﻿using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
+﻿using HighlyAvailableMonolithPOC.Application;
+using HighlyAvailableMonolithPOC.Infrastructure;
+using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,10 +19,14 @@ namespace HighlyAvailableMonolithPOC.Folders.Commands
 
     public class UploadFileCommandHandler : IRequestHandler<UploadFileCommand, Unit>
     {
+        private readonly FileStore fileStore;
         private readonly ApplicationDbContext context;
 
-        public UploadFileCommandHandler(ApplicationDbContext context)
+        public UploadFileCommandHandler(
+            FileStore fileStore,
+            ApplicationDbContext context)
         {
+            this.fileStore = fileStore;
             this.context = context;
         }
 
@@ -34,6 +40,7 @@ namespace HighlyAvailableMonolithPOC.Folders.Commands
                 string destinationFileName = $"{destinationPath}\\{displayName}-{Guid.NewGuid()}{ext}";
 
                 var folder = await context.Folders.FirstOrDefaultAsync(x => x.Id == request.FolderId);
+
                 if (folder != null)
                 {
                     folder.Files.Add(new Infrastructure.Persistence.File()
@@ -43,23 +50,12 @@ namespace HighlyAvailableMonolithPOC.Folders.Commands
                         FolderId = request.FolderId
                     });
 
+                    await fileStore.Add(request.Content, destinationPath, destinationFileName);
                     await context.SaveChangesAsync();
-                    await ProcessAndSave(request, destinationPath, destinationFileName);
                 }
             }
 
             return Unit.Value;
-        }
-
-        private static async Task ProcessAndSave(UploadFileCommand request, string destinationPath, string destinationFileName)
-        {
-            await Task.Delay(3);  // Simulate some long running processing...
-
-            Directory.CreateDirectory(destinationPath);
-            using (var stream = System.IO.File.Create(destinationFileName))
-            {
-                await request.Content.CopyToAsync(stream);
-            }
         }
     }
 }

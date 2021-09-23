@@ -5,6 +5,7 @@ using HighlyAvailableMonolithPOC.Folders.Commands;
 using Microsoft.AspNetCore.Http;
 using System;
 using HighlyAvailableMonolithPOC.Application.Queries;
+using HighlyAvailableMonolithPOC.Application.Commands;
 
 namespace HighlyAvailableMonolithPOC.Controllers
 {
@@ -50,6 +51,17 @@ namespace HighlyAvailableMonolithPOC.Controllers
             };
 
             await sender.Send(command);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFolder([FromRoute] Guid id)
+        {
+            await sender.Send(new DeleteFolderCommand()
+            {
+                FolderId = id
+            });
+
             return NoContent();
         }
     }

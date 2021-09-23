@@ -1,9 +1,8 @@
-﻿using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
+﻿using HighlyAvailableMonolithPOC.Infrastructure;
+using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,34 +16,36 @@ namespace HighlyAvailableMonolithPOC.Application.Commands
 
     public class DeleteFolderCommandHandler : IRequestHandler<DeleteFolderCommand, Unit>
     {
+        private readonly FileStore fileStore;
         private readonly ApplicationDbContext context;
 
-        public DeleteFolderCommandHandler(ApplicationDbContext context)
+        public DeleteFolderCommandHandler(
+            FileStore fileStore,
+            ApplicationDbContext context)
         {
+            this.fileStore = fileStore;
             this.context = context;
         }
 
         public async Task<Unit> Handle(DeleteFolderCommand request, CancellationToken cancellationToken)
         {
-            var folder = await context.Folders.FirstOrDefaultAsync(x => x.Id == request.FolderId);
+            var folder = await context.Folders
+                .Include(f => f.Files)
+                .Include(f => f.SubFolders)
+                    .ThenInclude(f => f.Files)
+                .FirstOrDefaultAsync(x => x.Id == request.FolderId);
+            
             if (folder != null)
             {
                 var filesNames = folder.Files.Select(f => f.FileName).ToList();
 
-                // TODO: Get all files within subfolders...
-
+                await fileStore.Remove(filesNames);
                 context.Folders.Remove(folder);
 
-                await context.SaveChangesAsync();
-                await DeleteAllFilesFromStore(filesNames);
+                //await context.SaveChangesAsync();
             }
 
             return Unit.Value;
-        }
-
-        private async Task DeleteAllFilesFromStore(IEnumerable<string> fileNames)
-        {
-            throw new NotImplementedException();
         }
     }
 }

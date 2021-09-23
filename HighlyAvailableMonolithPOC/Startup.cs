@@ -1,4 +1,6 @@
+using HighlyAvailableMonolithPOC.Application;
 using HighlyAvailableMonolithPOC.Application.Pipelines;
+using HighlyAvailableMonolithPOC.Infrastructure;
 using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -24,6 +26,8 @@ namespace HighlyAvailableMonolithPOC
             services.AddMediatR(typeof(Startup).Assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(MetricsPipeline<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionPipeline<,>));
+
+            services.AddSingleton<FileStore>();
 
             string connectionString = Configuration.GetValue<string>("ConnectionString");
 
