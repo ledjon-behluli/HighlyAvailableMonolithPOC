@@ -23,10 +23,10 @@ namespace HighlyAvailableMonolithPOC.Infrastructure
             {
                 await Task.Delay(3);        // Simulate some long running task.
 
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
+                //if (File.Exists(path))
+                //{
+                //    File.Delete(path);
+                //}
             }
         }
     }

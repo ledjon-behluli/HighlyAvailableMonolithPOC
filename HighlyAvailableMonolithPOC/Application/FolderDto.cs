@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HighlyAvailableMonolithPOC.Application.Queries
+namespace HighlyAvailableMonolithPOC.Application
 {
     public class FolderDto
     {
