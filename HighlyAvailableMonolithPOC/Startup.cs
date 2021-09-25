@@ -1,4 +1,4 @@
-using HighlyAvailableMonolithPOC.Application;
+using DotNetCore.CAP;
 using HighlyAvailableMonolithPOC.Application.Pipelines;
 using HighlyAvailableMonolithPOC.Infrastructure;
 using HighlyAvailableMonolithPOC.Infrastructure.Persistence;
@@ -33,11 +33,18 @@ namespace HighlyAvailableMonolithPOC
 
             services.AddScoped(x => new SqlConnectionFactory(connectionString));
             services.AddDbContext<ApplicationDbContext>(x => x.UseSqlServer(connectionString), ServiceLifetime.Scoped);
-            
+
+            services.AddTransient<InitDeleteFolderHandler>();
             services.AddCap(x =>
             {
                 x.UseEntityFramework<ApplicationDbContext>();
-                x.UseRabbitMQ("ConnectionString");
+                x.UseRabbitMQ(options =>
+                {
+                    options.HostName = "localhost";
+                    options.UserName = "admin";
+                    options.Password = "admin";
+                });
+                x.UseDashboard();
             });
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -48,6 +55,7 @@ namespace HighlyAvailableMonolithPOC
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCapDashboard();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HighlyAvailableMonolith v1"));
             app.UseRouting();

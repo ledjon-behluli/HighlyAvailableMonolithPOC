@@ -57,7 +57,7 @@ namespace HighlyAvailableMonolithPOC.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFolder([FromRoute] Guid id)
         {
-            await sender.Send(new DeleteFolderCommand()
+            await sender.Send(new InitDeleteFolderCommand()
             {
                 FolderId = id
             });
