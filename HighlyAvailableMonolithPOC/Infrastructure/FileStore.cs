@@ -8,7 +8,7 @@ namespace HighlyAvailableMonolithPOC.Infrastructure
     {
         public async Task Add(Stream content, string destinationPath, string destinationFileName)
         {
-            await Task.Delay(3);  // Simulate some long running task.
+            await Task.Delay(3000);     // Simulate some long running task.
 
             Directory.CreateDirectory(destinationPath);
             using (var stream = File.Create(destinationFileName))
@@ -21,12 +21,12 @@ namespace HighlyAvailableMonolithPOC.Infrastructure
         {
             foreach (var path in paths)
             {
-                await Task.Delay(3);        // Simulate some long running task.
+                await Task.Delay(1000);        // Simulate some long running task.
 
-                //if (File.Exists(path))
-                //{
-                //    File.Delete(path);
-                //}
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
             }
         }
     }

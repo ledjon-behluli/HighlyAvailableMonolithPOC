@@ -37,7 +37,7 @@ namespace HighlyAvailableMonolithPOC.Folders.Commands
                 string ext = Path.GetExtension(request.FileName);
                 string displayName = Path.GetFileNameWithoutExtension(request.FileName);
                 string destinationPath = $"{AppDomain.CurrentDomain.BaseDirectory}filestore";
-                string destinationFileName = $"{destinationPath}\\{displayName}-{Guid.NewGuid()}{ext}";
+                string destinationFileName = $"{destinationPath}\\{Guid.NewGuid()}{ext}";
 
                 var folder = await context.Folders.FirstOrDefaultAsync(x => x.Id == request.FolderId);
 

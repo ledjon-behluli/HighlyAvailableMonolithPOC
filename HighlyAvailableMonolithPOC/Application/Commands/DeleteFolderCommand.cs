@@ -34,21 +34,18 @@ namespace HighlyAvailableMonolithPOC.Application.Commands
 
         public async Task<Unit> Handle(DeleteFolderCommand request, CancellationToken cancellationToken)
         {
-            var folder = await context.Folders.FirstOrDefaultAsync(x => x.Id == request.FolderId);
-            if (folder != null)
-            {
-                var paths = await GetPaths(request.FolderId);
+            var folderDtos = await LoadFlattenHierarchy(request.FolderId);
+            var paths = folderDtos.SelectMany(ff => ff.Files.Select(f => f.FileName));
+            await fileStore.Remove(paths);
 
-                await fileStore.Remove(paths);
-                context.Folders.Remove(folder);
-
-                //await context.SaveChangesAsync();
-            }
+            var folders = context.Folders.Where(f => folderDtos.Select(f => f.Id).Contains(f.Id));
+            context.Folders.RemoveRange(folders);
+            await context.SaveChangesAsync();
 
             return Unit.Value;
         }
 
-        private async Task<List<string>> GetPaths(Guid targetFolderId)
+        private async Task<IEnumerable<FolderDto>> LoadFlattenHierarchy(Guid targetFolderId)
         {
             FolderDto rootFolder;
 
@@ -71,12 +68,9 @@ namespace HighlyAvailableMonolithPOC.Application.Commands
             }
 
             if (rootFolder == null)
-                return new List<string>();
+                return new List<FolderDto>();
 
-            var flattenedFolders = Flatten(rootFolder);
-            var filenames = flattenedFolders.SelectMany(ff => ff.Files.Select(f => f.FileName));
-
-            return filenames.ToList();
+            return Flatten(rootFolder);
         }
 
         public IEnumerable<FolderDto> Flatten(FolderDto root)
