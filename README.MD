@@ -1,4 +1,4 @@
-﻿# HighlyAvailableMonolithPOC
+﻿# HighlyAvailableMonolithPOC (Blocking)
 
 Example application on improving a monolithic application's availability, by using messaging patterns.
 
