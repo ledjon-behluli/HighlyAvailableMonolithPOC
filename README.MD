@@ -6,4 +6,4 @@ Switch between branches "blocking" and "non-blocking" to see the results of dele
 
 ---
 
-Detailed explanation can be found [here](https://www.ledjonbehluli.com/posts/aug_2_20/)
+Detailed explanation can be found [here](https://www.ledjonbehluli.com/posts/improving_monoliths_availability/)
