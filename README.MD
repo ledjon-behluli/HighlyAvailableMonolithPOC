@@ -10,5 +10,5 @@ Example application on improving a monolithic application's availability, by usi
 
 ---
 
-Detailed explanation can be found [here](https://www.ledjonbehluli.com/posts/aug_2_20/)
+Detailed explanation can be found [here](https://www.ledjonbehluli.com/posts/improving_monoliths_availability/)
 
